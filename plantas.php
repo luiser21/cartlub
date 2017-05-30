@@ -80,14 +80,17 @@
 											<td><?php echo $datos['NOMPLANTA'] ?></td>
 											<td class="center"><?php echo $datos['CODIGOEMPRESA'] ?></td>
 											<td class="center"><?php echo $datos['CONSECUTIVO'] ?></td>
-											<td><a class="edit" href="javascript:;">Editar</a></td>
-											<td><a class="delete" href="javascript:;">Eliminar</a></td>
+											<td><a class="edit" href="javascript:;" id="<?php echo $datos['CODPLANTA'] ?>">Editar</a></td>
+											<td><a class="delete" href="javascript:;" id="<?php echo $datos['CODPLANTA'] ?>">Eliminar</a></td>
 											</tr>
 										<?php }	?>																			
 									</tbody>
 								</table>
 							</div>
 						</div>
+						<span id="capa">
+							
+							</span>
 						<!-- END EXAMPLE TABLE PORTLET-->
 					</div>
 				</div>

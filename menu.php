@@ -6,16 +6,14 @@ header('Content-Type: text/html; charset=ISO-8859-1');
 	$DBGestion = new GestionBD('AGENDAMIENTO');	
 	// Si la sesion no est? activa y/o autenticada ingresa a este paso
 	//imprimir($_SESSION);
-	if (!isset($_SESSION["active"]) == 1)
+	if (!isset($_SESSION["active"]) == 1 && @$_SESSION["username"]=='')
 	{
 		header("location:logout.php");
 	}
 	// Si la sesion est? activa y autenticada ingresa a este paso
 	else
 	{	// toma las variables de sesion y de edicion de contenidos		
-		$usuario = $_SESSION["username"];
-		$permiso = $_SESSION["permiso"];		
-		
+		$usuario = $_SESSION["username"];		
 	}
 ?>
 
@@ -43,6 +41,7 @@ header('Content-Type: text/html; charset=ISO-8859-1');
 	<link rel="stylesheet" type="text/css" href="assets/chosen-bootstrap/chosen/chosen.css" />
 	<link rel="stylesheet" href="assets/data-tables/DT_bootstrap.css" />
 	<link rel="stylesheet" type="text/css" href="assets/uniform/css/uniform.default.css" />
+	<script type="text/javascript" src="js/FAjax.js"></script>
 	<link rel="shortcut icon" href="images/favicon.ico" />
 </head>
 <!-- END HEAD -->

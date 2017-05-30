@@ -2264,22 +2264,34 @@ var App = function () {
             var aData = oTable.fnGetData(nRow);
             var jqTds = $('>td', nRow);
             jqTds[0].innerHTML = '<input type="text" class="m-wrap small" value="' + aData[0] + '">';
-            jqTds[1].innerHTML = '<input type="text" class="m-wrap small" value="' + aData[1] + '">';
-            jqTds[2].innerHTML = '<input type="text" class="m-wrap small" value="' + aData[2] + '">';
-            jqTds[3].innerHTML = '<input type="text" class="m-wrap small" value="' + aData[3] + '">';
-            jqTds[4].innerHTML = '<a class="edit" href="">Save</a>';
-            jqTds[5].innerHTML = '<a class="cancel" href="">Cancel</a>';
+            jqTds[1].innerHTML = '<input type="text" class="required m-wrap small" value="' + aData[1] + '">';
+            jqTds[2].innerHTML = '<input type="text" class="required m-wrap small" value="' + aData[2] + '">';
+            jqTds[3].innerHTML = '<input type="text" class="required m-wrap small" value="' + aData[3] + '">';
+            jqTds[4].innerHTML = '<a class="edit" href="">Guardar</a>';
+            jqTds[5].innerHTML = '<a class="cancel" href="">Cancelar</a>';
         }
 
-        function saveRow(oTable, nRow) {
+        function saveRow(oTable, nRow, nNew) {
             var jqInputs = $('input', nRow);
             oTable.fnUpdate(jqInputs[0].value, nRow, 0, false);
             oTable.fnUpdate(jqInputs[1].value, nRow, 1, false);
             oTable.fnUpdate(jqInputs[2].value, nRow, 2, false);
             oTable.fnUpdate(jqInputs[3].value, nRow, 3, false);
-            oTable.fnUpdate('<a class="edit" href="">Edit</a>', nRow, 4, false);
-            oTable.fnUpdate('<a class="delete" href="">Delete</a>', nRow, 5, false);
+            oTable.fnUpdate('<a class="edit" href="">Editar</a>', nRow, 4, false);
+            oTable.fnUpdate('<a class="delete" href="">Eliminar</a>', nRow, 5, false);
             oTable.fnDraw();
+			var pagina= "delete_registros.php";
+			var capa = "capa";
+			var codplanta = jqInputs[0].value;
+			var nomplanta = jqInputs[1].value;
+			var codempre = jqInputs[2].value;
+			var consecu = jqInputs[3].value;
+			if(nNew=='0'){				
+				var valores = 'planta='+'udp'+ '&id=' + codplanta + '&nomplanta=' + nomplanta + '&codempre=' + codempre + '&consecu=' + consecu + '&' + Math.random();
+			}else if(nNew=='new'){
+				var valores = 'planta='+'ins'+ '&nomplanta=' + nomplanta + '&codempre=' + codempre + '&consecu=' + consecu + '&' + Math.random();
+			}
+			FAjax (pagina,capa,valores,'POST',true)    
         }
 
         function cancelEditRow(oTable, nRow) {
@@ -2288,7 +2300,7 @@ var App = function () {
             oTable.fnUpdate(jqInputs[1].value, nRow, 1, false);
             oTable.fnUpdate(jqInputs[2].value, nRow, 2, false);
             oTable.fnUpdate(jqInputs[3].value, nRow, 3, false);
-            oTable.fnUpdate('<a class="edit" href="">Edit</a>', nRow, 4, false);
+            oTable.fnUpdate('<a class="edit" href="">Editar</a>', nRow, 4, false);
             oTable.fnDraw();
         }
 
@@ -2297,26 +2309,34 @@ var App = function () {
         jQuery('#sample_editable_1_wrapper .dataTables_length select').addClass("m-wrap xsmall"); // modify table per page dropdown
 
         var nEditing = null;
-
+		var nNew = '0';
         $('#sample_editable_1_new').click(function (e) {
             e.preventDefault();
             var aiNew = oTable.fnAddData(['', '', '', '',
-                '<a class="edit" href="">Edit</a>', '<a class="cancel" data-mode="new" href="">Cancel</a>']);
+                '<a class="edit" href="">Editar</a>', '<a class="cancel" data-mode="new" href="">Cancelar</a>']);
             var nRow = oTable.fnGetNodes(aiNew[0]);
             editRow(oTable, nRow);
-            nEditing = nRow;
+			nEditing=nRow;
+            nNew='new';
         });
 
         $('#sample_editable_1 a.delete').live('click', function (e) {
             e.preventDefault();
 
-            if (confirm("Are you sure to delete this row ?") == false) {
+            if (confirm("Esta seguro de eliminar esta fila ?") == false) {
                 return;
             }
 
             var nRow = $(this).parents('tr')[0];
             oTable.fnDeleteRow(nRow);
-            alert("Deleted! Do not forget to do some ajax to sync with backend :)");
+			var pagina= "delete_registros.php";
+			var capa = "capa";
+			var oID = $(this).attr("id");
+			var valores = 'planta='+'del'+ '&id=' + oID + '&' + Math.random();
+			FAjax (pagina,capa,valores,'POST',true)    
+            //alert("Deleted!");
+			
+			
         });
 
         $('#sample_editable_1 a.cancel').live('click', function (e) {
@@ -2336,16 +2356,21 @@ var App = function () {
             /* Get the row as a parent of the link that was clicked on */
             var nRow = $(this).parents('tr')[0];
 
-            if (nEditing !== null && nEditing != nRow) {
+            if (nEditing !== null && nEditing != nRow && nNew=='0') {
                 /* Currently editing - but not this row - restore the old before continuing to edit mode */
                 restoreRow(oTable, nEditing);
                 editRow(oTable, nRow);
                 nEditing = nRow;
-            } else if (nEditing == nRow && this.innerHTML == "Save") {
+            } else if (nEditing == nRow && this.innerHTML == "Guardar" && nNew=='0') {
                 /* Editing this row and want to save it */
-                saveRow(oTable, nEditing);
+                saveRow(oTable, nEditing, nNew);
                 nEditing = null;
-                alert("Updated! Do not forget to do some ajax to sync with backend :)");
+               // alert("Actualizado!");
+			} else if (nNew =='new' && this.innerHTML == "Guardar") {
+                /* Editing this row and want to save it */
+                saveRow(oTable, nEditing, nNew);
+                nEditing = null;
+                //alert("Registrado!");
             } else {
                 /* No edit in progress - let's start one */
                 editRow(oTable, nRow);
@@ -3046,10 +3071,10 @@ var App = function () {
                 .closest('.control-group').removeClass('error').addClass('success'); // set success class to the control group
             },
 
-            submitHandler: function (form) {
+            submitHandler: function (form1) {
                 success1.show();
                 error1.hide();
-				submit.form();
+				submit.form1();
             }
         });
 
