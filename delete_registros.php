@@ -24,7 +24,4 @@ if(isset($_POST['planta']) && $_POST['planta']=='ins' && @$_SESSION["username"]!
 	$DBGestion->Consulta($sql);
 	echo 'Planta Registrada..';
 }
-else{
-	echo 'Verificar los Datos Ingresados..';	
-}
 ?>
